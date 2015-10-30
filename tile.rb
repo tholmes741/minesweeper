@@ -14,15 +14,18 @@ class Tile
     @revealed = true
   end
 
-  def find_surrounding_tiles(@grid, x, y)
-    8.times do |num|
-      if board.grid(x-1, y).is_a?(Boolean)
-
+  def find_surrounding_tiles
+    all_surrounding_moves = []
+    MOVES.each do |(x, y)|
+      all_surrounding_moves << [@pos.first + x, @pos.last + y]
     end
-
+    all_surrounding_moves
   end
 
-  def neighbors
+  def neightbors
+    find_surrounding_tiles.select do |(x, y)|
+      x.between?(0, @board.grid[0].length) && y.between?(0, @board.grid.length)
+    end
   end
 
   def neighbor_bomb_count
@@ -34,13 +37,20 @@ class Tile
 
   private
   MOVES = [
-    [ 1, 0]
-    [-1, 0]
-    [ 0, 1]
-    [ 0,-1]
-    [ 1, 1]
-    [-1,-1]
-    [-1, 1]
+    [ 1, 0],
+    [-1, 0],
+    [ 0, 1],
+    [ 0,-1],
+    [ 1, 1],
+    [-1,-1],
+    [-1, 1],
     [1, -1]
   ]
+end
+
+if __FILE__ == $PROGRAM_NAME
+  x = Board.new(2, 3)
+  x.show
+  tile = Tile.new(x, [1,0])
+  p tile.neightbors
 end
