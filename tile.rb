@@ -1,12 +1,13 @@
 require './board.rb'
 
 class Tile
+  attr_reader :board, :bombed
 
-  def initialize(board, pos)
+
+  def initialize(pos, bomb = false)
     @pos = pos
-    @board = board
     @flagged = false
-    @bombed = false
+    @bombed = bomb
     @revealed = false
   end
 
@@ -23,16 +24,25 @@ class Tile
   end
 
   def neightbors
-    find_surrounding_tiles.select do |(x, y)|
-      x.between?(0, @board.grid[0].length) && y.between?(0, @board.grid.length)
+    find_surrounding_tiles.select do |pos|
+      @board.valid_pos?(pos)
     end
   end
 
   def neighbor_bomb_count
+    bomb_counter
+    neightbors.each do |pos|
+      bomb_counter += 1 if board[*pos].bombed
+    end
+    bomb_counter
   end
 
-  def inspect
+  def board=(board)
+    @board = board
+  end
 
+  def to_s
+    @revealed ? neighbor_bomb_count : "x"
   end
 
   private
@@ -49,8 +59,7 @@ class Tile
 end
 
 if __FILE__ == $PROGRAM_NAME
-  x = Board.new(2, 3)
+  x = Board.new(9, 9)
+  x.populate_board
   x.show
-  tile = Tile.new(x, [1,0])
-  p tile.neightbors
 end
